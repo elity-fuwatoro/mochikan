@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>もちかん</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- PWA & Favicon Setting -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta name="theme-color" content="#2563eb">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <h1>もちかん</h1>
+    <div class="header-actions">
+      <button id="btnSettings" class="icon-btn" aria-label="データ管理">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
+      </button>
+      <button id="btnAddPatient" class="primary-btn">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>追加
+      </button>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="active">担当中</button>
+    <button class="tab-btn" data-tab="inactive">担当外</button>
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="main-content" id="patientListContainer">
+    <!-- Cards will be injected here by JS -->
+  </main>
+
+  <!-- Modals -->
+
+  <!-- 1. Patient Edit Modal -->
+  <div id="patientModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">患者情報</h2>
+        <button class="close-btn" id="btnCloseModal">
+          <svg class="svg-icon" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="patientForm">
+          <input type="hidden" id="p_id">
+
+          <div class="form-section">
+            <h3>基礎データ</h3>
+            <div class="form-group row-group">
+              <div class="flex-0-5">
+                <label>部屋番号</label>
+                <input type="text" id="p_roomNumber" placeholder="例: 301">
+              </div>
+              <div class="flex-1">
+                <label>氏名</label>
+                <input type="text" id="p_name" required placeholder="例: 山田 太郎">
+              </div>
+            </div>
+            <div class="form-group row-group">
+              <div class="flex-1">
+                <label>PNs</label>
+                <input type="text" id="p_pns" placeholder="担当看護師名">
+              </div>
+              <div class="flex-0-5">
+                <label>年齢</label>
+                <input type="number" id="p_age" placeholder="歳">
+              </div>
+              <div class="flex-0-5">
+                <label>性別</label>
+                <select id="p_gender">
+                  <option value="male">男性</option>
+                  <option value="female">女性</option>
+                  <option value="other">その他</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>主病名</label>
+              <input type="text" id="p_disease" placeholder="主病名を入力">
+            </div>
+            <div class="form-group">
+              <label>腫瘍転移部位</label>
+              <input type="text" id="p_metastasis" placeholder="肝、肺、骨 など">
+            </div>
+            <div class="form-group row-group">
+              <div class="flex-1">
+                <label>肝機能</label>
+                <input type="text" id="p_liver" placeholder="Child-Pugh A等">
+              </div>
+              <div class="flex-1">
+                <label>腎機能</label>
+                <input type="text" id="p_kidney" placeholder="eGFR, Cr等">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>入院日</label>
+              <input type="date" id="p_admissionDate">
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>日々データ</h3>
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="p_karteDone">
+              <label for="p_karteDone">本日のカルテ記載完了</label>
+            </div>
+            <div class="form-group row-group">
+              <div class="flex-1">
+                <label>次回 点滴</label>
+                <input type="date" id="p_nextIvDashDate">
+              </div>
+              <div class="flex-1">
+                <label>次回 内服</label>
+                <input type="date" id="p_nextPoRxDate">
+              </div>
+            </div>
+            <div class="form-group row-group">
+              <div class="flex-1">
+                <label>次回 麻薬</label>
+                <input type="date" id="p_nextNarcoticRxDate">
+              </div>
+              <div class="flex-1">
+                <label>最終採血日</label>
+                <input type="date" id="p_lastBloodTestDate">
+              </div>
+            </div>
+            <div class="form-group row-group">
+              <div class="flex-1">
+                <label>最終IC日</label>
+                <input type="date" id="p_lastIcDate">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>IC内容</label>
+              <textarea id="p_icContent" rows="2" placeholder="ご家族への説明内容等"></textarea>
+            </div>
+            <div class="form-group">
+              <label>備考</label>
+              <textarea id="p_remark" rows="2" placeholder="注意事項、申し送り事項など"></textarea>
+            </div>
+          </div>
+
+          <div class="form-section" id="inactiveSection" style="display:none;">
+            <h3>担当外（アーカイブ）操作</h3>
+            <div class="form-group checkbox-group alert-group">
+              <input type="checkbox" id="p_isInactive">
+              <label for="p_isInactive">この患者を担当外とする（退院・転棟など）</label>
+            </div>
+            <div class="form-group" id="inactiveDateGroup" style="display:none;">
+              <label>担当外になった日</label>
+              <input type="date" id="p_inactiveDate">
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn" id="btnCancelPatient">キャンセル</button>
+        <button class="primary-btn" id="btnSavePatient">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Date Update Modal (mini popup for Rx updates) -->
+  <div id="dateUpdateModal" class="modal-overlay hidden popup-overlay">
+    <div class="modal-content popup-content">
+      <div class="modal-header">
+        <h3 id="dateUpdateTitle">処方日の更新</h3>
+      </div>
+      <div class="modal-body">
+        <p id="dateUpdateDesc" class="text-sm color-sub"></p>
+        <div class="form-group">
+          <label>新しい日付を選択</label>
+          <input type="date" id="newDateInput">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn" id="btnClearDate">日付クリア(不要)</button>
+        <button class="primary-btn" id="btnSaveDate">更新する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Settings / Data Management Modal -->
+  <div id="settingsModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>データ管理</h2>
+        <button class="close-btn" id="btnCloseSettings">
+          <svg class="svg-icon" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-card">
+          <svg class="svg-icon settings-icon" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <div class="settings-info">
+            <h4>JSON エクスポート</h4>
+            <p>全患者データをバックアップ</p>
+          </div>
+          <button id="btnExport" class="primary-btn sm-btn">保存</button>
+        </div>
+        <div class="settings-card">
+          <svg class="svg-icon settings-icon" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <div class="settings-info">
+            <h4>JSON インポート</h4>
+            <p>バックアップから復元</p>
+          </div>
+          <input type="file" id="importFile" accept=".json" style="display:none">
+          <button id="btnImport" class="secondary-btn sm-btn"
+            onclick="document.getElementById('importFile').click()">開く</button>
+        </div>
+        <p class="warning-text">
+          <svg class="svg-icon" viewBox="0 0 24 24">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          インポートすると現在のデータは全て上書きされます。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
